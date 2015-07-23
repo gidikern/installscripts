@@ -8,10 +8,10 @@
 #              currently handles: \
 #              		When base template - removes kernel network rules
 
-version=v1.0.1
+version=v0.0.1
 template_name=NOT_TEMPLATE
 IS_DIR=${IS_DIR-"/usr/local/lib/installscripts"}
-IS_REPO_PATH={IS_REPO_PATH-"https://github-isl-01.ca.com/kergi01/installscripts/blob/master/rhel"}
+IS_REPO_PATH=${IS_REPO_PATH-"https://github.com/gidikern/installscripts/raw/master/rhel"}
 [ -f /root/installscripts/.`eval hostname` ] && template_name=`eval hostname`
 
 start(){
