@@ -10,15 +10,15 @@
 
 version=v0.0.1
 template_name=NOT_TEMPLATE
-IS_DIR=${IS_DIR-"/usr/local/lib/installscripts"}
-IS_REPO_PATH=${IS_REPO_PATH-"https://github.com/gidikern/installscripts/raw/master/rhel"}
+IS_DIR=${IS_DIR-/usr/local/lib/installscripts
+IS_REPO_PATH=https://github.com/gidikern/installscripts/raw/master/rhel
 [ -f /root/installscripts/.`eval hostname` ] && template_name=`eval hostname`
+[ ! -d $IS_DIR ] && mkdir -p $IS_DIR && echo "Creating script root folder $IS_DIR"
 
 start(){
 	echo "`basename $0` start"
-	[ ! -d $IS_DIR ] && mkdir -p $IS_DIR && echo "Creating script root folder $IS_DIR"
-	wget -qN $IS_REPO_PATH/.installscripts.conf -P $IS_DIR/
-	wget -qN $IS_REPO_PATH/.templateautoconfig.sh -P $IS_DIR/
+	wget -N $IS_REPO_PATH/.installscripts.conf -P $IS_DIR/
+	wget -N $IS_REPO_PATH/.templateautoconfig.sh -P $IS_DIR/
 	chmod +x $IS_DIR/.templateautoconfig.sh 
 	$IS_DIR/.templateautoconfig.sh $IS_DIR/.installscripts.conf
 	touch /var/lock/subsys/baserhel7
