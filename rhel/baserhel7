@@ -1,0 +1,63 @@
+#!/bin/sh
+#
+# baserhel7	template init script
+#
+#chkconfig -list
+# chkconfig: 12345 60 10
+# description: Template shutdown and reboot special needs \
+#              currently handles: \
+#              		When base template - removes kernel network rules
+
+version=v1.0.1
+template_name=NOT_TEMPLATE
+IS_DIR=${IS_DIR-"/usr/local/lib/installscripts"}
+IS_REPO_PATH={IS_REPO_PATH-"https://github-isl-01.ca.com/kergi01/installscripts/blob/master/rhel"}
+[ -f /root/installscripts/.`eval hostname` ] && template_name=`eval hostname`
+
+start(){
+	echo "`basename $0` start"
+	[ ! -d $IS_DIR ] && mkdir -p $IS_DIR && echo "Creating script root folder $IS_DIR"
+	wget -qN $IS_REPO_PATH/.installscripts.conf -P $IS_DIR/
+	wget -qN $IS_REPO_PATH/.templateautoconfig.sh -P $IS_DIR/
+	chmod +x $IS_DIR/.templateautoconfig.sh 
+	$IS_DIR/.templateautoconfig.sh $IS_DIR/.installscripts.conf
+	touch /var/lock/subsys/baserhel7
+}
+
+stop(){
+	echo "`basename $0` stop"
+	if [ `eval hostname` == $template_name ]; then
+		rm -f /etc/udev/rules.d/70-persistent-net.rules;
+		echo "`basename $0` /etc/udev/rules.d/70-persistent-net.rules removed in "`date +"%Y-%m-%d %H:%M:%S"` > $IS_DIR/70-persistent-net.rules.removed
+		echo "removing /etc/udev/rules.d/70-persistent-net.rules";
+	else 
+		echo "Hostname do not match";
+	fi;
+}
+
+settemplate(){
+	touch $IS_DIR/.`eval hostname`
+	echo "Now, i'm template"
+}
+
+version(){
+	echo "Template version $version"
+}
+
+case "$1" in
+	start) start;;
+	stop) stop;;
+	settemplate) settemplate;;
+	version) version;;
+	istemplate) 
+	if [ `eval hostname` == $template_name ]; then
+		RETVAL=0;
+		echo "I'm a template";
+	else
+		RETVAL=2;
+		echo "I'm not a template ";		
+	fi;;
+	*) echo $"Usage: $0 {start|stop|version|settemplate|istemplate}"; RETCAL=1;;
+esac
+exit 0
+
